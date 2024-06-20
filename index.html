@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ONLINE STOPWATCH</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+      }
+      .container {
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2),
+          0 16px 32px rgba(0, 0, 0, 0.2); /* More shadows */
+        text-align: center;
+      }
+      .stopwatch {
+        font-size: 4em;
+        color: #333;
+      }
+      .buttons {
+        margin-top: 20px;
+      }
+      button {
+        padding: 10px 20px;
+        font-size: 1.2em;
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+      }
+      .red {
+        background-color: #ff6347;
+      }
+      .blue {
+        background-color: #007bff;
+      }
+      .green {
+        background-color: #28a745;
+      }
+      .black {
+        background-color: #333;
+      }
+      button:hover {
+        opacity: 0.8;
+      }
+      .color-dropdown {
+        margin-top: 20px;
+      }
+      .laps {
+        margin-top: 20px;
+        text-align: center; /* Center-align the "Laps" text */
+      }
+      .lap-item {
+        margin-bottom: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="stopwatch">00:00:00</div>
+      <div class="buttons">
+        <button id="startStop" class="red">Start</button>
+        <button id="lap" class="red">Lap</button>
+        <button id="reset" class="red">Reset</button>
+      </div>
+      <div class="color-dropdown">
+        <select id="colorSelector">
+          <option value="red">Red</option>
+          <option value="blue">Blue</option>
+          <option value="green">Green</option>
+          <option value="black">Black</option>
+        </select>
+      </div>
+      <div class="laps">
+        <h2>Laps</h2>
+        <ul id="lapList"></ul>
+      </div>
+    </div>
+
+    <script>
+      let timer;
+      let hours = 0;
+      let minutes = 0;
+      let seconds = 0;
+      let isRunning = false;
+      let lapCount = 1;
+
+      function displayTime() {
+        document.querySelector(".stopwatch").innerText = formatTime();
+      }
+
+      function formatTime() {
+        return `${hours < 10 ? "0" + hours : hours}:${
+          minutes < 10 ? "0" + minutes : minutes
+        }:${seconds < 10 ? "0" + seconds : seconds}`;
+      }
+
+      function startStop() {
+        if (!isRunning) {
+          timer = setInterval(updateTime, 1000);
+          document.getElementById("startStop").innerText = "Stop";
+          isRunning = true;
+        } else {
+          clearInterval(timer);
+          document.getElementById("startStop").innerText = "Start";
+          isRunning = false;
+        }
+      }
+
+      function updateTime() {
+        seconds++;
+        if (seconds === 60) {
+          seconds = 0;
+          minutes++;
+          if (minutes === 60) {
+            minutes = 0;
+            hours++;
+          }
+        }
+        displayTime();
+      }
+
+      function reset() {
+        clearInterval(timer);
+        hours = 0;
+        minutes = 0;
+        seconds = 0;
+        displayTime();
+        document.getElementById("startStop").innerText = "Start";
+        isRunning = false;
+        lapCount = 1;
+        document.getElementById("lapList").innerHTML = "";
+      }
+
+      function lap() {
+        let lapTime = formatTime();
+        let lapItem = document.createElement("li");
+        lapItem.textContent = `Lap ${lapCount}: ${lapTime}`;
+        document.getElementById("lapList").appendChild(lapItem);
+        lapCount++;
+      }
+
+      function changeButtonColor(color) {
+        document.querySelectorAll(".buttons button").forEach((btn) => {
+          btn.classList.remove("red", "blue", "green", "black");
+          btn.classList.add(color);
+        });
+      }
+
+      document.getElementById("startStop").addEventListener("click", startStop);
+      document.getElementById("reset").addEventListener("click", reset);
+      document.getElementById("lap").addEventListener("click", lap);
+
+      document
+        .getElementById("colorSelector")
+        .addEventListener("change", function () {
+          changeButtonColor(this.value);
+        });
+
+      displayTime();
+    </script>
+  </body>
+</html>
